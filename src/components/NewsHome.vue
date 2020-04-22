@@ -1,48 +1,38 @@
 
 <template>
-  <div styling="min-height:400px;">
-    <b-carousel
-      v-if="heroPosts"
-      id="carousel-1"
-      v-model="slide"
-      :interval="4000"
-      indicators
-      fade
-      background="#ababab"
-      img-width=1024
-      img-height=480
-      style="text-shadow: 1px 1px 2px #333;"
-      @sliding-start="onSlideStart"
-      @sliding-end="onSlideEnd"
-    >
-      <div class="hero" v-for="heroPost in heroPosts" :key="heroPost.id">
-        <a :href="heroPost.url" target="_blank">
-          <b-carousel-slide
-            img-height=480
-            img-width=1024
-            style="height:580px !important"
-            :text="heroPost.source.name"
-            :caption="heroPost.title"
-            :img-src="heroPost.urlToImage"
-          >
-          </b-carousel-slide>
-        </a>
-      </div>
-    </b-carousel>
+  <div styling="min-height:400px;" class="container">
+    <HeroCarousel :heroPosts="this.heroPosts"/>
     <div class="post">
-        <div>
-          <b-jumbotron header="News Agent" lead="The Bleeding Edge News Network!">
-          </b-jumbotron>
-        </div>
-        <div v-if="posts" class="container" >
-          <div>
-            <b-dropdown id="dropdown-1" text="Dropdown Button" class="m-md-2">
-              <b-dropdown-item>First Action</b-dropdown-item>
-              <b-dropdown-item>Second Action</b-dropdown-item>
-              <b-dropdown-item>Third Action</b-dropdown-item>
-            </b-dropdown>
-          </div>
-          <b-nav-form>
+      <div>
+        <b-jumbotron header="News Agent" lead="The Bleeding Edge News Network!">
+        </b-jumbotron>
+      </div>
+      <div v-if="posts" class="container" >
+        <b-button v-b-toggle.sidebar-no-header>Toggle Sidebar</b-button>
+        <b-nav-form>
+         
+  
+        </b-nav-form>
+        <Posts :posts="this.posts" :showOverlay="this.showOverlay" :error="this.error"/>
+      </div>
+    </div>
+    <div>
+
+      <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" no-header shadow>
+        <template v-slot:default="{ hide }">
+          <div class="p-3">
+            <h4 id="sidebar-no-header-title">Custom header sidebar</h4>
+            <p>
+              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
+              in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
+            </p>
+            <nav class="mb-3">
+              <b-nav vertical>
+                <b-nav-item active @click="hide">Active</b-nav-item>
+                <b-nav-item href="#link-1" @click="hide">Link</b-nav-item>
+                <b-nav-item href="#link-2" @click="hide">Another Link</b-nav-item>
+              </b-nav>
+            </nav>
             <b-form-input class="mr-sm-2" v-model="searchText" placeholder="Search" debounce="500"></b-form-input>
             <b-form-datepicker 
             id="example-datepicker" 
@@ -53,46 +43,21 @@
             reset-button
             close-button>
             </b-form-datepicker>
-            <b-button variant="outline-success" class="my-2 my-sm-0" @click="searchNews()">Search</b-button>
-          </b-nav-form>
-          <b-overlay :show="this.showOverlay" rounded="sm">
-            <div v-if="error" class="error">
-              <p>We're sorry, we're not able to retrieve this information at the moment, please try back later</p>
-              <p>{{ error }}</p>
-            </div>
-            <b-card-group columns class="posts-container">
-              <div class="posts" v-for="post in posts" :key="post.id">
-                  <b-card
-                  :img-src='post.urlToImage'
-                  img-alt="Image"
-                  img-top
-                  tag="article"
-                  class="mb-3"
-                  > 
-                  <b-card-title>
-                    <a :href="post.url">{{ post.title }}</a>
-                  </b-card-title>
-                    <b-card-text>
-                      {{ post.description }}
-                    </b-card-text>
-                    <b-card-sub-title>
-                      {{post.publishedAt | dateFilter}}
-                    </b-card-sub-title>
-                    <b-card-text>
-                      <b>- {{post.source.name ? post.source.name : ''}} </b>
-                    </b-card-text>
-                  </b-card>
-              </div>
-            </b-card-group>
-          </b-overlay>
-        </div>
-      </div>
+            <b-button variant="primary" block @click="searchNews(), hide()">Search</b-button>
+            <b-button variant="outline-primary" block @click="clearFields(), hide()">Reset</b-button>
+            <b-button variant="outline-primary" block @click="hide()">Close</b-button>
+          </div>
+        </template>
+      </b-sidebar>
+    </div>
   </div>
+
 </template>
 
 <script>
 import axios from 'axios';
-import moment from 'moment';
+import Posts from '@/components/Posts.vue'
+import HeroCarousel from '@/components/HeroCarousel.vue';
 export default {
   data (){
     const nowDate = new Date()
@@ -105,12 +70,14 @@ export default {
       datePicker: today,
       dateMax:maxDate,
       searchText: "",
-      slide: 0,
       currentPage:1,
-      sliding: true,
       perPage:20,
       totalArticles:0,
     }
+  },
+  components: {
+    Posts,
+    HeroCarousel
   },
   name: 'NewsHome',
   props: {
@@ -180,17 +147,13 @@ export default {
         this.error = error
       }).finally(() => this.showOverlay = false)
     },
-      onSlideStart() {
-        this.sliding = true
-      },
-      onSlideEnd() {
-        this.sliding = false
-      }
-  },
-  filters: {
-   dateFilter(item){
-      if (!item) return ''
-      return moment(item).format('Do MMMM YYYY');
+    clearFields(){
+      this.posts = []
+      this.searchText = ""
+      const newDate = new Date()
+      const todayDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate())
+      this.datePicker = todayDate
+      this.fetchData()
     }
   }
 }
