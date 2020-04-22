@@ -1,6 +1,63 @@
 
 <template>
   <div styling="min-height:400px;" class="container">
+    <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" backdrop shadow>
+        <template v-slot:default="{ hide }">
+          <div class="p-3">
+            <h4 id="sidebar-no-header-title">Filter News</h4>
+            <b-form @submit="onSubmit" @reset="onReset">
+              <b-form-group
+                id="input-group-1"
+                label="Search:"
+                label-for="tags-basic"
+                description="Keywords: Trump, Oil prices, Disney etc."
+              >
+                <b-form-tags input-id="tags-basic" remove-on-delete v-model="form.searchText" class="mb-2" placeholder="Keyword search" required></b-form-tags>
+              </b-form-group>
+
+              <b-form-group id="input-group-2" label="From Date:" label-for="input-2">
+                <b-form-datepicker 
+                  id="from-datepicker" 
+                  v-model="form.fromDatePicker" 
+                  class="mr-sm-2"
+                  :max="dateMax"
+                  :min="dateMin"
+                  today-button
+                  reset-button
+                  close-button>
+                  </b-form-datepicker>
+              </b-form-group>
+
+              <b-form-group id="input-group-2" label="Till Date:" label-for="input-2">
+                <b-form-datepicker 
+                  id="till-datepicker" 
+                  v-model="form.tillDatePicker" 
+                  class="mr-sm-2"
+                  :max="dateMax"
+                  :min="dateMin"
+                  today-button
+                  reset-button
+                  close-button>
+                  </b-form-datepicker>
+              </b-form-group>
+
+              <b-form-group id="input-group-3" label="Filter by:" label-for="input-3">
+                <b-form-select
+                  id="input-3"
+                  v-model="form.sortBy"
+                  :options="sortByFields"
+                  required
+                ></b-form-select>
+              </b-form-group>
+
+              <b-button type="submit" variant="primary" block>Search</b-button>
+              <b-button type="reset" variant="outline-danger" block @click="hide()">Reset</b-button>
+              <b-button variant="outline-warning" block @click="hide()">Close</b-button>
+            </b-form>
+            
+          </div>
+        </template>
+      </b-sidebar>
     <HeroCarousel :heroPosts="this.heroPosts"/>
     <div class="post">
       <div>
@@ -16,40 +73,6 @@
         <Posts :posts="this.posts" :showOverlay="this.showOverlay" :error="this.error"/>
       </div>
     </div>
-    <div>
-
-      <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" no-header shadow>
-        <template v-slot:default="{ hide }">
-          <div class="p-3">
-            <h4 id="sidebar-no-header-title">Custom header sidebar</h4>
-            <p>
-              Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis
-              in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.
-            </p>
-            <nav class="mb-3">
-              <b-nav vertical>
-                <b-nav-item active @click="hide">Active</b-nav-item>
-                <b-nav-item href="#link-1" @click="hide">Link</b-nav-item>
-                <b-nav-item href="#link-2" @click="hide">Another Link</b-nav-item>
-              </b-nav>
-            </nav>
-            <b-form-input class="mr-sm-2" v-model="searchText" placeholder="Search" debounce="500"></b-form-input>
-            <b-form-datepicker 
-            id="example-datepicker" 
-            v-model="datePicker" 
-            class="mr-sm-2"
-            :max="dateMax"
-            today-button
-            reset-button
-            close-button>
-            </b-form-datepicker>
-            <b-button variant="primary" block @click="searchNews(), hide()">Search</b-button>
-            <b-button variant="outline-primary" block @click="clearFields(), hide()">Reset</b-button>
-            <b-button variant="outline-primary" block @click="hide()">Close</b-button>
-          </div>
-        </template>
-      </b-sidebar>
-    </div>
   </div>
 
 </template>
@@ -63,16 +86,25 @@ export default {
     const nowDate = new Date()
     const today = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate())
     const maxDate = new Date(today)
+    const minDate = new Date(today)
+    minDate.setMonth(minDate.getMonth() - 1)
     return {
       posts: [],
       error:null,
       showOverlay: true,
-      datePicker: today,
       dateMax:maxDate,
-      searchText: "",
+      dateMin:minDate,
       currentPage:1,
       perPage:20,
       totalArticles:0,
+      form:{
+          searchText: [],
+          fromDatePicker: today,
+          tillDatePicker: today,
+          sortBy: null,
+          checked: []
+      },
+      sortByFields: [{ text: 'Popularity', value: "popularity" }, { text: 'Date', value: 'publishedAt'}, { text: 'Relevancy', value: 'relevancy'}],
     }
   },
   components: {
@@ -85,13 +117,21 @@ export default {
   },
   mounted() {
     this.fetchData()
-    this.scroll()
   },
   watch: {
     '$route':'fetchData'
   },
   methods:{
-    scroll(){
+    nullWindowsScroll(){
+      window.onscroll = () => {
+        let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
+
+        if (bottomOfWindow) {
+          return true;
+        }
+      }
+    },
+    headlinesScroll(){
       window.onscroll = () => {
         let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
 
@@ -106,20 +146,52 @@ export default {
             axios.get(`http://newsapi.org/v2/top-headlines?country=za&sortBy=popularity&page=${this.currentPage}&apiKey=15105666e9fe426d838014145956acd4`)
             .then(response => {
                 console.log(response)
+                this.totalArticles = response.data.totalResults
                 this.posts = this.posts.concat(response.data.articles);
                 this.error = null;
             })
             .catch(error => {
               console.log(error)
               this.error = error
-            }).finally(() => this.showOverlay = false)
+            }).finally(() => {
+              this.showOverlay = false
+            })
+          }
+        }
+      }
+    },
+    everythingScroll(){
+      window.onscroll = () => {
+        let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
+
+        if (bottomOfWindow) {
+          let checkPage = (this.totalArticles / this.perPage)
+          checkPage = Math.round(checkPage);
+          console.log(checkPage);
+          if (this.currentPage < checkPage){
+            this.currentPage++
+            this.showOverlay = true
+
+            axios.get(`http://newsapi.org/v2/everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&page=${this.currentPage}&apiKey=15105666e9fe426d838014145956acd4`)
+            .then(response => {
+                console.log(response)
+                this.totalArticles = response.data.totalResults
+                this.posts = this.posts.concat(response.data.articles);
+                this.error = null;
+            })
+            .catch(error => {
+              console.log(error)
+              this.error = error
+            }).finally(() => {
+              this.showOverlay = false
+            })
           }
         }
       }
     },
     fetchData() {
       this.showOverlay = true
-
+      this.nullWindowsScroll()
       axios.get(`http://newsapi.org/v2/top-headlines?country=za&sortBy=popularity&apiKey=15105666e9fe426d838014145956acd4`)
       .then(response => {
         console.log(response)
@@ -130,29 +202,45 @@ export default {
       .catch(error => {
         console.log(error)
         this.error = error
-      }).finally(() => this.showOverlay = false)
+      }).finally(() =>{ 
+          this.showOverlay = false
+          this.currentPage = 1
+          this.headlinesScroll()
+        })
     },
     searchNews() {
       this.showOverlay = true
       this.posts = []
-      const text = this.searchText;
-      axios.get(`http://newsapi.org/v2/everything?q=${text}&from=${this.datePicker}&apiKey=15105666e9fe426d838014145956acd4`)
+      this.nullWindowsScroll()
+      axios.get(`http://newsapi.org/v2/everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&apiKey=15105666e9fe426d838014145956acd4`)
       .then(response => {
         console.log(response)
+        this.totalArticles = response.data.totalResults
         this.error = null;
         this.posts = response.data.articles
       })
       .catch(error => {
         console.log(error)
         this.error = error
-      }).finally(() => this.showOverlay = false)
+      }).finally(() => {
+          this.everythingScroll()
+          this.currentPage = 1
+          this.showOverlay = false
+        })
     },
-    clearFields(){
+    onSubmit(evt) {
+      evt.preventDefault()
+      this.searchNews();
+    },
+    onReset(evt) {
+      evt.preventDefault()
       this.posts = []
-      this.searchText = ""
+      this.form.searchText = []
+      this.form.sortBy = null
       const newDate = new Date()
       const todayDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate())
-      this.datePicker = todayDate
+      this.form.fromDatePicker = todayDate
+      this.form.tillDatePicker = todayDate
       this.fetchData()
     }
   }
@@ -165,5 +253,8 @@ export default {
 <style scoped lang="scss">
 .posts-container {
   margin: 20px 0;
+}
+#sidebar-no-header{
+  text-align: left;
 }
 </style>

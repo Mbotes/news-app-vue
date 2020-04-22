@@ -14,7 +14,7 @@
                 class="mb-3"
                 > 
                 <b-card-title>
-                <a :href="post.url">{{ post.title }}</a>
+                <a :href="post.url" target="_blank">{{ post.title }}</a>
                 </b-card-title>
                 <b-card-text>
                     {{ post.description }}
