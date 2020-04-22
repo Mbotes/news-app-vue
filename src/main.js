@@ -14,12 +14,8 @@ Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
-export const HTTP = axios.create({
-  baseURL: 'http://newsapi.org/v2/',
-  headers: {
-    'X-Api-Key': '15105666e9fe426d838014145956acd4'
-  }
-})
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
+axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_SECRET;
 
 Vue.config.productionTip = false
 

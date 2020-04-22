@@ -169,7 +169,7 @@ export default {
 
             axios
               .get(
-                `http://newsapi.org/v2/top-headlines?country=za&sortBy=popularity&page=${this.currentPage}&apiKey=15105666e9fe426d838014145956acd4`
+                `top-headlines?country=za&sortBy=popularity&page=${this.currentPage}`
               )
               .then(response => {
                 console.log(response);
@@ -206,7 +206,7 @@ export default {
             if (this.posts.length < 100) {
               axios
                 .get(
-                  `http://newsapi.org/v2/everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&page=${this.currentPage}&apiKey=15105666e9fe426d838014145956acd4`
+                  `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&page=${this.currentPage}`
                 )
                 .then(response => {
                   console.log(response);
@@ -235,7 +235,7 @@ export default {
       this.nullWindowsScroll();
       axios
         .get(
-          `http://newsapi.org/v2/top-headlines?country=za&sortBy=popularity&apiKey=15105666e9fe426d838014145956acd4`
+          `top-headlines?country=za&sortBy=popularity`
         )
         .then(response => {
           console.log(response);
@@ -264,7 +264,7 @@ export default {
       document.documentElement.scrollTop = 0;
       axios
         .get(
-          `http://newsapi.org/v2/everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&apiKey=15105666e9fe426d838014145956acd4`
+          `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}`
         )
         .then(response => {
           console.log(response);

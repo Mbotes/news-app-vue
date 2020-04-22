@@ -27,7 +27,7 @@ export default {
   },
   methods:{
     FetchHeroPosts(){
-      axios.get('http://newsapi.org/v2/top-headlines?country=us&sortBy=popularity&page=1&apiKey=15105666e9fe426d838014145956acd4')
+      axios.get('top-headlines?country=us&sortBy=popularity&page=1')
       .then(response => {
         console.log(response)
         this.heroPosts = response.data.articles.slice(0, 5);
