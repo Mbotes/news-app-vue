@@ -1,8 +1,6 @@
 <template>
   <div class="home">
-    <b-overlay :show="this.showHomeOverlay" rounded="sm">
       <NewsHome :heroPosts="heroPosts"/>
-    </b-overlay>
     <Footer/>
   </div>
 </template>
@@ -16,8 +14,7 @@ import axios from 'axios'
 export default {
   data (){
     return{
-      heroPosts:[],
-      showHomeOverlay:true
+      heroPosts:[]
     }
   },
   name: 'Home',
@@ -37,7 +34,7 @@ export default {
       })
       .catch(error => {
         console.log(error)
-      }).finally(() => this.showHomeOverlay = false)
+      })
     }
   }
 }
