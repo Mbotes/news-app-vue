@@ -8,7 +8,7 @@
         <p class="mb-0">{{ error }}</p>
       </b-alert>
     </div>
-    <b-card-group columns class="posts-container">
+    <b-card-group class="posts-container">
       <div class="posts" v-for="post in posts" :key="post.id">
         <b-card :img-src="post.urlToImage" img-alt="Image" img-top tag="article" class="mb-3">
           <b-card-title>
@@ -68,5 +68,8 @@ export default {
 <style scoped lang="scss">
 .posts-container {
   margin: 20px 0;
+}
+.posts {
+  width:100%
 }
 </style>

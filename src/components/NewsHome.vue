@@ -3,23 +3,23 @@
   <div styling="min-height:400px;" class="container">
     <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" backdrop shadow>
       <template v-slot:default="{ hide }">
-        <div class="p-3">
+        <div class="p-3" style="text-align:left;">
           <h4 id="sidebar-no-header-title">Filter News</h4>
-          <b-form @submit="onSubmit" @reset="onReset" :visible="sidebarVisible">
+          <b-form @submit="onSubmit" @reset="onReset">
             <b-form-group
               id="input-group-1"
               label="Search:"
               label-for="tags-basic"
               description="Keywords: Trump, Oil prices, Disney etc."
             >
-              <b-form-tags
+              <b-form-input
                 input-id="tags-basic"
                 remove-on-delete
                 v-model="form.searchText"
                 class="mb-2"
                 placeholder="Keyword search"
                 required
-              ></b-form-tags>
+              ></b-form-input>
             </b-form-group>
 
             <b-form-group id="input-group-2" label="From Date:" label-for="input-2">
@@ -68,10 +68,6 @@ date = latest articles come first.">
         <b-jumbotron header="News Agent" lead="The Bleeding Edge News Network!"></b-jumbotron>
       </div>
     </div>
-    <b-button block v-b-toggle.sidebar-no-header variant="outline-primary">
-      Filter News Content
-      <b-icon-filter></b-icon-filter>
-    </b-button>
     <div v-if="posts" class="container">
       <div>
         <Posts
@@ -115,7 +111,7 @@ export default {
       noPosts: false,
       developerLimit: false,
       form: {
-        searchText: [],
+        searchText: null,
         fromDatePicker: today,
         tillDatePicker: today,
         sortBy: null,
@@ -260,8 +256,8 @@ export default {
       this.posts = [];
       this.noSearchResults = false;
       this.nullWindowsScroll();
-      document.body.scrollTop = 0; // For Safari
-      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 100; // For Safari
+      document.documentElement.scrollTop = 100;
       axios
         .get(
           `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}`
@@ -272,7 +268,6 @@ export default {
             console.log("I got no posts!")
             this.noSearchResults = true;
           } else{
-            this.sidebarVisible = false;
             this.posts = response.data.articles;
             this.noPosts = false;
           }
