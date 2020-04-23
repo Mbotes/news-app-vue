@@ -22,16 +22,20 @@
         </b-card>
       </div>
     </b-card-group>
+
     <div v-if="noPosts" class="error">
-      <b-alert show variant="info">
-        <p>
-          You've reached the end!
-          <b-icon-arrow-clockwise></b-icon-arrow-clockwise>
-        </p>
-        <p
-          v-if="developerLimit"
-        >Unfortunately the developer server limit of 100 posts per scroll was hit <b-icon-server></b-icon-server>. Try search for something new<b-icon-shift></b-icon-shift>.</p>
-      </b-alert>
+      <div>
+        <b-button size="sm" variant="outline-primary" class="mb-4" @click="scrollToTop()">Back to top</b-button>
+        <b-alert show variant="info">
+          <p>
+            You've reached the end!
+            <b-icon-arrow-clockwise></b-icon-arrow-clockwise>
+          </p>
+          <p
+            v-if="developerLimit"
+          >Unfortunately the developer server limit of 100 posts per scroll was hit <b-icon-server></b-icon-server>. Try search for something new<b-icon-shift></b-icon-shift>.</p>
+        </b-alert>
+      </div>
     </div>
     <div v-if="noSearchResults" class="error">
       <b-alert show variant="warning">
@@ -53,6 +57,12 @@ export default {
     noSearchResults: Boolean,
     noPosts: Boolean,
     developerLimit: Boolean
+  },
+  methods:{
+    scrollToTop() {
+      document.body.scrollTop = 0; // For Safari
+      document.documentElement.scrollTop = 0;
+    }
   },
   filters: {
     dateFilter(item) {

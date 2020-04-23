@@ -3,7 +3,7 @@
     <b-navbar toggleable type="dark" variant="dark" :sticky="this.sticky" >
       <div class="container">
         <b-navbar-brand to="/">News Agent</b-navbar-brand>
-        <b-button v-b-toggle.sidebar-no-header variant="outline-light">
+        <b-button v-b-toggle.sidebar-no-header variant="outline-light" size="sm">
             Filter News Content
             <b-icon-filter></b-icon-filter>
           </b-button>

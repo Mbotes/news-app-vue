@@ -3,63 +3,66 @@
   <div styling="min-height:400px;" class="container">
     <b-sidebar id="sidebar-no-header" aria-labelledby="sidebar-no-header-title" backdrop shadow>
       <template v-slot:default="{ hide }">
-        <div class="p-3" style="text-align:left;">
-          <h4 id="sidebar-no-header-title">Filter News</h4>
-          <b-form @submit="onSubmit" @reset="onReset">
-            <b-form-group
-              id="input-group-1"
-              label="Search:"
-              label-for="tags-basic"
-              description="Keywords: Trump, Oil prices, Disney etc."
-            >
-              <b-form-input
-                input-id="tags-basic"
-                remove-on-delete
-                v-model="form.searchText"
-                class="mb-2"
-                placeholder="Keyword search"
-                required
-              ></b-form-input>
-            </b-form-group>
+        <b-overlay :show="showOverlay" >  
+          <div class="p-3" style="text-align:left;">
 
-            <b-form-group id="input-group-2" label="From Date:" label-for="input-2">
-              <b-form-datepicker
-                id="from-datepicker"
-                v-model="form.fromDatePicker"
-                class="mr-sm-2"
-                :max="dateMax"
-                :min="dateMin"
-                today-button
-                reset-button
-                close-button
-              ></b-form-datepicker>
-            </b-form-group>
+              <h4 id="sidebar-no-header-title">Filter News</h4>
+              <b-form @submit="onSubmit" @reset="onReset">
+                <b-form-group
+                  id="input-group-1"
+                  label="Search:"
+                  label-for="tags-basic"
+                  description="Keywords: Trump, Oil prices, Disney etc."
+                >
+                  <b-form-input
+                    input-id="tags-basic"
+                    remove-on-delete
+                    v-model="form.searchText"
+                    class="mb-2"
+                    placeholder="Keyword search"
+                    required
+                  ></b-form-input>
+                </b-form-group>
 
-            <b-form-group id="input-group-2" label="Till Date:" label-for="input-2">
-              <b-form-datepicker
-                id="till-datepicker"
-                v-model="form.tillDatePicker"
-                class="mr-sm-2"
-                :max="dateMax"
-                :min="dateMin"
-                today-button
-                reset-button
-                close-button
-              ></b-form-datepicker>
-            </b-form-group>
+                <b-form-group id="input-group-2" label="From Date:" label-for="input-2">
+                  <b-form-datepicker
+                    id="from-datepicker"
+                    v-model="form.fromDatePicker"
+                    class="mr-sm-2"
+                    :max="dateMax"
+                    :min="dateMin"
+                    today-button
+                    reset-button
+                    close-button
+                  ></b-form-datepicker>
+                </b-form-group>
 
-            <b-form-group id="input-group-3" label="Filter by:" label-for="input-3" description="relevancy = articles more closely related to search terms come first,
-popularity = articles from popular sources and publishers come first,
-date = latest articles come first.">
-              <b-form-select id="input-3" v-model="form.sortBy" :options="sortByFields" required  ></b-form-select>
+                <b-form-group id="input-group-2" label="Till Date:" label-for="input-2">
+                  <b-form-datepicker
+                    id="till-datepicker"
+                    v-model="form.tillDatePicker"
+                    class="mr-sm-2"
+                    :max="dateMax"
+                    :min="dateMin"
+                    today-button
+                    reset-button
+                    close-button
+                  ></b-form-datepicker>
+                </b-form-group>
 
-            </b-form-group>
+                <b-form-group id="input-group-3" label="Filter by:" label-for="input-3" description="relevancy = articles more closely related to search terms come first,
+    popularity = articles from popular sources and publishers come first,
+    date = latest articles come first.">
+                  <b-form-select id="input-3" v-model="form.sortBy" :options="sortByFields" required  ></b-form-select>
 
-            <b-button type="submit" variant="primary" block>Search</b-button>
-            <b-button type="reset" variant="outline-danger" block @click="hide()">Reset</b-button>
-            <b-button variant="outline-warning" block @click="hide()">Close</b-button>
-          </b-form>
-        </div>
+                </b-form-group>
+
+                <b-button type="submit" variant="outline-primary" block>Search</b-button>
+                <b-button type="reset" variant="outline-danger" block @click="hide()">Reset</b-button>
+                <b-button variant="outline-warning" block @click="hide()">Close</b-button>
+              </b-form>
+          </div>
+        </b-overlay>
       </template>
     </b-sidebar>
     <HeroCarousel :heroPosts="this.heroPosts" />
@@ -68,7 +71,7 @@ date = latest articles come first.">
         <b-jumbotron header="News Agent" lead="The Bleeding Edge News Network!"></b-jumbotron>
       </div>
     </div>
-    <div v-if="posts" class="container">
+    <div v-if="posts">
       <div>
         <Posts
           :posts="this.posts"
@@ -105,6 +108,7 @@ export default {
       dateMax: maxDate,
       dateMin: minDate,
       currentPage: 1,
+      hide: true,
       perPage: 20,
       totalArticles: 0,
       noSearchResults: false,
@@ -114,7 +118,7 @@ export default {
         searchText: null,
         fromDatePicker: today,
         tillDatePicker: today,
-        sortBy: null,
+        sortBy: 'relevancy',
         checked: []
       },
       sortByFields: [
@@ -265,12 +269,12 @@ export default {
         .then(response => {
           console.log(response);
           if(response.data.totalResults == 0){
-            console.log("I got no posts!")
             this.noSearchResults = true;
           } else{
             this.posts = response.data.articles;
             this.noPosts = false;
           }
+          this.hide = true;
           this.totalArticles = response.data.totalResults;
           this.error = null;
           this.developerLimit = false;
