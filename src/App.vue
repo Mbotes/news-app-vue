@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <b-navbar toggleable type="dark" variant="dark">
+    <b-navbar toggleable type="dark" variant="dark" :sticky="this.sticky" >
       <div class="container">
         <b-navbar-brand to="/">News Agent</b-navbar-brand>
 
@@ -22,6 +22,16 @@
     <router-view/>
   </div>
 </template>
+
+<script>
+export default {
+  data(){
+    return{
+      sticky: true
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 #app {

@@ -5,7 +5,7 @@
       <template v-slot:default="{ hide }">
         <div class="p-3">
           <h4 id="sidebar-no-header-title">Filter News</h4>
-          <b-form @submit="onSubmit" @reset="onReset">
+          <b-form @submit="onSubmit" @reset="onReset" :visible="sidebarVisible">
             <b-form-group
               id="input-group-1"
               label="Search:"
@@ -272,6 +272,7 @@ export default {
             console.log("I got no posts!")
             this.noSearchResults = true;
           } else{
+            this.sidebarVisible = false;
             this.posts = response.data.articles;
             this.noPosts = false;
           }
