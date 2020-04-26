@@ -50,6 +50,11 @@
         <li>Mobi could use some tidying up with regards to buttons in the header.</li>
       </ul>
 
+      <h3>Author</h3>
+      <p>
+        This website was made by <a href="https://mbotes.github.io/">Michael Botes</a>, you can view my github profile <a href="https://github.com/Mbotes">here</a>.
+      </p>
+
     </div>
   </div>
 </template>
