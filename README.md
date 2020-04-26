@@ -21,6 +21,16 @@ npm install
 ### Compiles and hot-reloads for development
 ```
 npm run serve
+
+Output:
+ DONE  Compiled successfully in 3706ms                                                                                                                                                        15:12:47
+
+  App running at:
+  - Local:   http://localhost:8080/
+  - Network: http://192.168.0.119:8080/
+
+  Note that the development build is not optimized.
+  To create a production build, run npm run build.
 ```
 
 ### Compiles and minifies for production
