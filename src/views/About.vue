@@ -1,7 +1,7 @@
 <template>
   <div class="about container" style="text-align:left;">
     <div class="m-3">
-      <h1 id="news-app-vue">news app vue</h1>
+      <h1 id="news-app-vue">News Agent App in Vue</h1>
       <h2 id="description">Description</h2>
       <p>
         This website was built in
