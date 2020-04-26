@@ -9,6 +9,8 @@ On load the website hits the ["Top Headlines"](https://newsapi.org/docs/endpoint
 
 One of the things I implemented on the site was infinite scrolling which check the total results of the endpoint and paginates as you hit the bottom of the window it will fetch the next batch of 20 posts.
 
+The site is also a PWA so you can install this website as adedicated app on your mobile device or browser.
+
 ## Installation
 
 ### Project setup
@@ -41,5 +43,5 @@ This project has been connected to [Cloud Build](https://cloud.google.com/cloud-
 * (At time of writing) - for some reason the endpoints have stopped supplying the "urlToImage" and are just returning "null", I think I may have hit a soft rate limit somewhere.
 * Due to the nature of the developer acocunt, the "Everything" endpoint has a limit of 100 posts returned.
 * On successful search, the sidebar remains open.
-* For some unknown, frustrating reason the newsApi on the Date filter will return a result set that includes one day ahead of what you give it, for example if you set your 'Till' date to 24th of april 2020 it will include results from 25th of april 2020. ¯\_(ツ)_/¯
+* For some unknown, frustrating reason the newsApi on the Date filter will return a result set that includes one day ahead of what you give it, for example if you set your 'Till' date to 24th of April 2020 it will include results from 25th of April 2020. ¯\_(ツ)_/¯
 * Mobi could use some tidying up with regards to buttons in the header. 
