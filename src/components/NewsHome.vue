@@ -34,6 +34,7 @@
                     today-button
                     reset-button
                     close-button
+                    :value-as-date="true"
                   ></b-form-datepicker>
                 </b-form-group>
 
@@ -47,6 +48,7 @@
                     today-button
                     reset-button
                     close-button
+                    :value-as-date="true"
                   ></b-form-datepicker>
                 </b-form-group>
 
@@ -54,6 +56,11 @@
     popularity = articles from popular sources and publishers come first,
     date = latest articles come first.">
                   <b-form-select id="input-3" v-model="form.sortBy" :options="sortByFields" required  ></b-form-select>
+
+                </b-form-group>
+
+                <b-form-group id="input-group-4" label="Language:" label-for="input-4" >
+                  <b-form-select id="input-4" v-model="form.language" :options="languageFields" required  ></b-form-select>
 
                 </b-form-group>
 
@@ -80,6 +87,7 @@
           :noPosts="this.noPosts"
           :noSearchResults="this.noSearchResults"
           :developerLimit="this.developerLimit"
+          :SearchFields="this.form"
         />
       </div>
     </div>
@@ -90,17 +98,12 @@
 import axios from "axios";
 import Posts from "@/components/Posts.vue";
 import HeroCarousel from "@/components/HeroCarousel.vue";
+import moment from 'moment';
 export default {
   data() {
-    const nowDate = new Date();
-    const today = new Date(
-      nowDate.getFullYear(),
-      nowDate.getMonth(),
-      nowDate.getDate()
-    );
-    const maxDate = new Date(today);
-    const minDate = new Date(today);
-    minDate.setMonth(minDate.getMonth() - 1);
+    const today =  moment().format("YYYY-MM-DD");
+    const maxDate = moment().format("YYYY-MM-DD");
+    const minDate = moment().subtract(1, 'month').format("YYYY-MM-DD");
     return {
       posts: [],
       error: null,
@@ -119,12 +122,30 @@ export default {
         fromDatePicker: today,
         tillDatePicker: today,
         sortBy: 'relevancy',
-        checked: []
+        checked: [],
+        language: 'en'
       },
       sortByFields: [
         { text: "Relevancy", value: "relevancy" },
         { text: "Popularity", value: "popularity" },
         { text: "Date", value: "publishedAt" }
+      ],
+      languageFields:[
+         { text: "EN", value: "en" },
+        { text: "FR", value: "fr" },
+        { text: "DE", value: "de" },
+        { text: "ES", value: "es"},
+        { text: "AR", value: "ar"},
+        { text: "HE", value: "he"},
+        { text: "IT", value: "it"},
+        { text: "NL", value: "nl"},
+        { text: "NO", value: "no"},
+        { text: "PT", value: "pt"},
+        { text: "RU", value: "ru"},
+        { text: "SE", value: "se"},
+        { text: "UD", value: "ud"},
+        { text: "ZH", value: "zh"},
+
       ]
     };
   },
@@ -206,7 +227,7 @@ export default {
             if (this.posts.length < 100) {
               axios
                 .get(
-                  `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&page=${this.currentPage}`
+                  `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&page=${this.currentPage}&language=${this.form.language}`
                 )
                 .then(response => {
                   console.log(response);
@@ -264,7 +285,7 @@ export default {
       document.documentElement.scrollTop = 100;
       axios
         .get(
-          `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}`
+          `everything?q=${this.form.searchText}&sortBy=${this.form.sortBy}&from=${this.form.fromDatePicker}&to=${this.form.tillDatePicker}&language=${this.form.language}`
         )
         .then(response => {
           console.log(response);
@@ -291,21 +312,24 @@ export default {
     },
     onSubmit(evt) {
       evt.preventDefault();
-      this.searchNews();
+      this.form.fromDatePicker = moment(this.form.fromDatePicker).format("YYYY-MM-DD")
+      this.form.tillDatePicker = moment(this.form.tillDatePicker).format("YYYY-MM-DD")
+      if(this.form.fromDatePicker <= this.form.tillDatePicker ) {
+        
+        this.searchNews();
+
+      } else {
+        alert("please make sure your till date is greater than your from date!");
+      }
     },
     onReset(evt) {
       evt.preventDefault();
       this.posts = [];
-      this.form.searchText = [];
-      this.form.sortBy = null;
-      const newDate = new Date();
-      const todayDate = new Date(
-        newDate.getFullYear(),
-        newDate.getMonth(),
-        newDate.getDate()
-      );
-      this.form.fromDatePicker = todayDate;
-      this.form.tillDatePicker = todayDate;
+      this.form.searchText = null;
+      this.form.sortBy = 'relevancy';
+      const today = moment().format("YYYY-MM-DD")
+      this.form.fromDatePicker = today;
+      this.form.tillDatePicker = today;
       document.body.scrollTop = 0; // For Safari
       document.documentElement.scrollTop = 0;
       this.fetchData();

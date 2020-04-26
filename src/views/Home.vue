@@ -1,14 +1,12 @@
 <template>
   <div class="home">
       <NewsHome :heroPosts="heroPosts"/>
-    <Footer/>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import NewsHome from '@/components/NewsHome.vue'
-import Footer from '@/components/Footer.vue'
 import axios from 'axios'
 
 export default {
@@ -19,8 +17,7 @@ export default {
   },
   name: 'Home',
   components: {
-    NewsHome,
-    Footer
+    NewsHome
   },
   mounted() {
     this.FetchHeroPosts()

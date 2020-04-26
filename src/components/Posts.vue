@@ -56,7 +56,8 @@ export default {
     error: String,
     noSearchResults: Boolean,
     noPosts: Boolean,
-    developerLimit: Boolean
+    developerLimit: Boolean,
+    searchFields: Object
   },
   methods:{
     scrollToTop() {
