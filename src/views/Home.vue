@@ -7,31 +7,19 @@
 <script>
 // @ is an alias to /src
 import NewsHome from '@/components/NewsHome.vue'
-import axios from 'axios'
 
 export default {
-  data (){
-    return{
-      heroPosts:[]
-    }
-  },
   name: 'Home',
   components: {
     NewsHome
   },
   mounted() {
-    this.FetchHeroPosts()
+    // this.FetchHeroPosts()
+    this.$store.dispatch('_GET_HERO_POSTS')
   },
-  methods:{
-    FetchHeroPosts(){
-      axios.get('top-headlines?country=us&sortBy=popularity&page=1')
-      .then(response => {
-        console.log(response)
-        this.heroPosts = response.data.articles.slice(0, 5);
-      })
-      .catch(error => {
-        console.log(error)
-      })
+  computed:{
+    heroPosts() {
+      return this.$store.getters.HEROPOSTS
     }
   }
 }
