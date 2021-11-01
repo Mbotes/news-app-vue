@@ -13,7 +13,7 @@ The site is also a PWA so you can install this website as a dedicated app on you
 
 ## Installation
 
-### Project setup
+### Project setup (!!!Pls note you need to have python 2 installed for the sass loader)
 ```
 npm install
 ```
